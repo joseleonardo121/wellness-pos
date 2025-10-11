@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+{% block title %}Detalle Venta{% endblock %}
+{% block content %}
+<div class="container">
+  <h3>Venta {{ venta.numero }}</h3>
+  <p><strong>Sucursal:</strong> {{ venta.sucursal }} &nbsp; <strong>Fecha:</strong> {{ venta.fecha }}</p>
+  <h5>Productos</h5>
+  <table class="table table-sm">
+    <thead><tr><th>Código</th><th>Producto</th><th>Cantidad</th><th>Precio</th><th>Subtotal</th></tr></thead>
+    <tbody>
+      {% for d in detalles %}
+      <tr>
+        <td>{{ d.producto.Codigo }}</td>
+        <td>{{ d.producto.Marca }} {{ d.producto.Modelo }}</td>
+        <td>{{ d.cantidad }}</td>
+        <td>S/. {{ d.precio_unitario }}</td>
+        <td>S/. {{ d.subtotal }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+<!-- 🔹 Notas de Cambio Asociadas -->
+<div class="card shadow-sm mt-4">
+  <div class="card-header bg-warning text-dark fw-bold">
+    🔁 Notas de Cambio Registradas
+  </div>
+  <div class="card-body">
+    {% if venta.notas_cambio.exists %}
+      {% for nota in venta.notas_cambio.all %}
+        <div class="border rounded p-3 mb-3 bg-light">
+          <div class="d-flex justify-content-between">
+            <h6 class="mb-0">📄 <strong>{{ nota.numero }}</strong></h6>
+            <small class="text-muted">{{ nota.fecha|date:"d/m/Y H:i" }}</small>
+          </div>
+          <p class="mb-1">👤 <strong>Vendedor:</strong> {{ nota.vendedor.username }}</p>
+          <p class="mb-1">🏬 <strong>Sucursal:</strong> {{ nota.get_sucursal_display }}</p>
+
+          <table class="table table-sm align-middle mt-2">
+            <thead>
+              <tr class="table-secondary">
+                <th>Producto Devuelto</th>
+                <th>Producto Entregado</th>
+                <th>Cantidad</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for d in nota.detalles.all %}
+                <tr>
+                  <td>
+                    {% if d.producto_devuelto %}
+                      {{ d.producto_devuelto.Diseno }} - {{ d.producto_devuelto.Color }} ({{ d.producto_devuelto.Talla }})
+                    {% else %}
+                      <em>Sin datos</em>
+                    {% endif %}
+                  </td>
+                  <td>
+                    {% if d.producto_entregado %}
+                      {{ d.producto_entregado.Diseno }} - {{ d.producto_entregado.Color }} ({{ d.producto_entregado.Talla }})
+                    {% else %}
+                      <em>Sin datos</em>
+                    {% endif %}
+                  </td>
+                  <td>{{ d.cantidad }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+
+          <p class="fw-bold mb-0">
+            💰 Diferencia: 
+            {% if nota.diferencia > 0 %}
+              <span class="text-success">+S/ {{ nota.diferencia }}</span>
+            {% elif nota.diferencia < 0 %}
+              <span class="text-danger">-S/ {{ nota.diferencia }}</span>
+            {% else %}
+              <span class="text-muted">S/ 0.00</span>
+            {% endif %}
+          </p>
+        </div>
+      {% endfor %}
+    {% else %}
+      <p class="text-muted mb-0">No hay notas de cambio registradas para esta venta.</p>
+    {% endif %}
+  </div>
+</div>
+
+  <h5>Pagos</h5>
+  <ul>
+    {% for p in pagos %}
+      <li>{{ p.metodo }} - S/. {{ p.monto }}</li>
+    {% endfor %}
+  </ul>
+  <h4>Total: S/. {{ venta.total }}</h4>
+  
+  BOTÓN PARA NOTA DE CAMBIO 
+  <div class="mt-4">
+      <a href="{% url 'crear_nota_cambio' venta.id %}" class="btn btn-warning">
+          📝 Registrar Nota de Cambio
+      </a>
+  </div>
+</div>
+{% endblock %}

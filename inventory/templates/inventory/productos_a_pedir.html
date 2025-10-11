@@ -1,0 +1,147 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4">📦 Productos a Pedir</h2>
+
+    <!-- 🚨 Urgentes -->
+    <div class="card shadow-sm p-3 mb-4 border-danger">
+        <h4 class="text-danger">🚨 Productos Urgentes (Stock = 0)</h4>
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover">
+                <thead class="table-danger">
+                    <tr>
+                        <th>Código</th>
+                        <th>Marca</th>
+                        <th>Modelo</th>
+                        <th>Diseño</th>
+                        <th>Talla</th>
+                        <th>Color</th>
+                        <th>Stock Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for p in urgentes %}
+                    <tr>
+                        <td>{{ p.Codigo }}</td>
+                        <td>{{ p.Marca }}</td>
+                        <td>{{ p.Modelo }}</td>
+                        <td>{{ p.Diseno }}</td>
+                        <td>{{ p.Talla }}</td>
+                        <td>{{ p.Color }}</td>
+                        <td>{{ p.CANT_TOTAL }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="7" class="text-center">✅ No hay productos urgentes</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ⚠️ Sugeridos -->
+    <div class="card shadow-sm p-3 mb-4 border-warning">
+        <h4 class="text-warning">⚠️ Productos Sugeridos (Stock = 1 y Stock = 2)</h4>
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover">
+                <thead class="table-warning">
+                    <tr>
+                        <th>Código</th>
+                        <th>Marca</th>
+                        <th>Modelo</th>
+                        <th>Diseño</th>
+                        <th>Talla</th>
+                        <th>Color</th>
+                        <th>Stock Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for p in sugeridos %}
+                    <tr>
+                        <td>{{ p.Codigo }}</td>
+                        <td>{{ p.Marca }}</td>
+                        <td>{{ p.Modelo }}</td>
+                        <td>{{ p.Diseno }}</td>
+                        <td>{{ p.Talla }}</td>
+                        <td>{{ p.Color }}</td>
+                        <td>{{ p.CANT_TOTAL }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="7" class="text-center">✅ No hay productos sugeridos</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- 👍 Está Bien -->
+    <div class="card shadow-sm p-3 mb-4 border-primary">
+        <h4 class="text-primary">👍 Stock Bien (3 a 5)</h4>
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover">
+                <thead class="table-primary">
+                    <tr>
+                        <th>Código</th>
+                        <th>Marca</th>
+                        <th>Modelo</th>
+                        <th>Diseño</th>
+                        <th>Talla</th>
+                        <th>Color</th>
+                        <th>Stock Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for p in normales %}
+                    <tr>
+                        <td>{{ p.Codigo }}</td>
+                        <td>{{ p.Marca }}</td>
+                        <td>{{ p.Modelo }}</td>
+                        <td>{{ p.Diseno }}</td>
+                        <td>{{ p.Talla }}</td>
+                        <td>{{ p.Color }}</td>
+                        <td>{{ p.CANT_TOTAL }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="7" class="text-center">✅ No hay productos en rango 3-5</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ✅ Excelente -->
+    <div class="card shadow-sm p-3 mb-4 border-success">
+        <h4 class="text-success">✅ Stock Excelente (>5)</h4>
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover">
+                <thead class="table-success">
+                    <tr>
+                        <th>Código</th>
+                        <th>Marca</th>
+                        <th>Modelo</th>
+                        <th>Diseño</th>
+                        <th>Talla</th>
+                        <th>Color</th>
+                        <th>Stock Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for p in excelentes %}
+                    <tr>
+                        <td>{{ p.Codigo }}</td>
+                        <td>{{ p.Marca }}</td>
+                        <td>{{ p.Modelo }}</td>
+                        <td>{{ p.Diseno }}</td>
+                        <td>{{ p.Talla }}</td>
+                        <td>{{ p.Color }}</td>
+                        <td>{{ p.CANT_TOTAL }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="7" class="text-center">✅ Todos los productos están bien abastecidos</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

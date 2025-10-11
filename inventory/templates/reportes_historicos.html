@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}Reportes Históricos{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="fw-bold">📑 Reportes Históricos</h3>
+        <a href="{% url 'generar_reporte_mensual' %}" class="btn btn-success shadow-sm">
+            <i class="bi bi-plus-circle"></i> Generar Reporte del Mes Actual
+        </a>
+    </div>
+<form method="get" class="mb-3 d-flex gap-2">
+  <input type="number" name="anio" placeholder="Año" value="{{ anio_filtro }}" class="form-control" style="width:120px;">
+  <input type="number" name="mes" placeholder="Mes" min="1" max="12" value="{{ mes_filtro }}" class="form-control" style="width:120px;">
+  <button type="submit" class="btn btn-primary">Buscar</button>
+  <a href="{% url 'reportes_historicos' %}" class="btn btn-secondary">Limpiar</a>
+</form>
+    {% if reportes %}
+    <div class="row g-4">
+        {% for reporte in reportes %}
+        <div class="col-md-6 col-lg-4">
+            <div class="card shadow-sm h-100 border-0 rounded-3">
+                <div class="card-header bg-dark text-white text-center fw-bold">
+                    {{ reporte.mes }}/{{ reporte.anio }}
+                </div>
+                <div class="card-body">
+                    <h6 class="fw-bold text-secondary mb-3">💰 Ventas</h6>
+                    <ul class="list-unstyled mb-3">
+                        <li><span class="fw-bold">S1:</span> S/. {{ reporte.ventas_s1|floatformat:2 }}</li>
+                        <li><span class="fw-bold">S2:</span> S/. {{ reporte.ventas_s2|floatformat:2 }}</li>
+                        <li><span class="fw-bold">S3:</span> S/. {{ reporte.ventas_s3|floatformat:2 }}</li>
+                    </ul>
+                    <p class="fw-bold text-primary">Total Ventas: S/. {{ reporte.ventas_total|floatformat:2 }}</p>
+
+                    <h6 class="fw-bold text-secondary mb-3">📈 Ganancias</h6>
+                    <ul class="list-unstyled">
+                        <li><span class="fw-bold">S1:</span> <span class="text-success">S/. {{ reporte.ganancia_s1|floatformat:2 }}</span></li>
+                        <li><span class="fw-bold">S2:</span> <span class="text-success">S/. {{ reporte.ganancia_s2|floatformat:2 }}</span></li>
+                        <li><span class="fw-bold">S3:</span> <span class="text-success">S/. {{ reporte.ganancia_s3|floatformat:2 }}</span></li>
+                    </ul>
+                    <p class="fw-bold text-success">Ganancia Total: S/. {{ reporte.ganancia_total|floatformat:2 }}</p>
+
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="alert alert-warning text-center shadow-sm" role="alert">
+        No hay reportes generados aún.
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

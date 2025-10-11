@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4 text-primary fw-bold">📦 Productos a Bajar desde Almacén</h2>
+
+    {% if productos %}
+        <div class="row g-3">
+            <div class="col-12">
+                <div class="card shadow-sm border-0">
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead class="table-light text-uppercase small">
+                                    <tr>
+                                        <th>Código</th>
+                                        <th>Marca</th>
+                                        <th>Modelo</th>
+                                        <th>Diseño</th>
+                                        <th>Talla</th>
+                                        <th>Color</th>
+                                        <th>Sucursal</th>
+                                        <th>Stock Sucursal</th>
+                                        <th>Stock Almacén</th>
+                                        <th>Acción</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for p in productos %}
+                                    <tr id="row-{{ p.Codigo }}-{{ p.Sucursal }}">
+                                        <td class="fw-bold text-secondary">{{ p.Codigo }}</td>
+                                        <td>{{ p.Marca }}</td>
+                                        <td>{{ p.Modelo }}</td>
+                                        <td>{{ p.Diseno }}</td>
+                                        <td>{{ p.Talla }}</td>
+                                        <td>{{ p.Color }}</td>
+                                        <td><span class="badge bg-info text-dark">{{ p.Sucursal }}</span></td>
+                                        <td>
+                                            <span class="{% if p.Stock_Sucursal == 0 %}text-danger fw-bold{% endif %}">
+                                                {{ p.Stock_Sucursal }}
+                                            </span>
+                                        </td>
+                                        <td>{{ p.Stock_Almacen }}</td>
+                                        <td>
+                                            <button class="btn btn-sm btn-success fw-bold bajar-btn"
+                                                data-codigo="{{ p.Codigo }}"
+                                                data-sucursal="{{ p.Sucursal }}"
+                                                data-cantidad="1">
+                                                ⬇ Bajar
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <div class="alert alert-info text-center fs-6 fw-semibold mt-4">
+            ✅ Todas las sucursales tienen suficiente stock.<br>
+            No es necesario bajar mercadería desde el almacén.
+        </div>
+    {% endif %}
+</div>
+
+<script>
+document.querySelectorAll('.bajar-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+        const codigo = this.dataset.codigo;
+        const sucursal = this.dataset.sucursal;
+        const cantidad = this.dataset.cantidad;
+
+        this.disabled = true;
+        this.innerText = "⏳ Bajando...";
+
+        fetch("{% url 'productos_a_bajar' %}", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": "{{ csrf_token }}",
+            },
+            body: JSON.stringify({ codigo, sucursal, cantidad })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if(data.success) {
+                alert(`✅ Producto ${codigo} bajado a ${sucursal}`);
+                const row = document.getElementById(`row-${codigo}-${sucursal}`);
+                row.querySelector('td:nth-child(8)').innerText = parseInt(row.querySelector('td:nth-child(8)').innerText) + parseInt(cantidad);
+                row.querySelector('td:nth-child(9)').innerText = parseInt(row.querySelector('td:nth-child(9)').innerText) - parseInt(cantidad);
+                this.style.display = 'none';
+            } else {
+                alert(`❌ Error: ${data.error}`);
+                this.disabled = false;
+                this.innerText = "⬇ Bajar";
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            alert("❌ Error en la comunicación con el servidor");
+            this.disabled = false;
+            this.innerText = "⬇ Bajar";
+        });
+    });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,180 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+  <h2>🧾 Nueva Nota de Cambio - Venta {{ venta.numero }}</h2>
+
+  <form method="post" id="notaCambioForm">
+    {% csrf_token %}
+
+    <!-- Datos generales -->
+    <div class="card p-3 mb-3 shadow-sm">
+      <h5>📋 Datos de la Nota</h5>
+      {{ form.as_p }}
+    </div>
+
+    <!-- Productos -->
+    <div class="card p-3 mb-3 shadow-sm">
+      <h5>🔄 Productos del Cambio</h5>
+      {{ formset.management_form }}
+
+      <div id="formset-container">
+        {% for f in formset %}
+          <div class="border rounded p-3 mb-3 formset-item bg-light">
+            <div class="row g-2 align-items-center">
+              <div class="col-md-4">
+                {{ f.codigo_devuelto.label_tag }}
+                {{ f.codigo_devuelto }}
+              </div>
+              <div class="col-md-4">
+                {{ f.codigo_entregado.label_tag }}
+                {{ f.codigo_entregado }}
+              </div>
+              <div class="col-md-2">
+                {{ f.cantidad.label_tag }}
+                {{ f.cantidad }}
+              </div>
+              <div class="col-md-2 text-end">
+                {{ f.DELETE }}
+                <button type="button" class="btn btn-danger btn-sm remove-item">🗑️</button>
+              </div>
+            </div>
+            {{ f.producto_devuelto }}
+            {{ f.producto_entregado }}
+
+            <!-- info producto -->
+            <div class="mt-2 small text-muted info-devuelto"></div>
+            <div class="small text-muted info-entregado"></div>
+          </div>
+        {% endfor %}
+      </div>
+
+      <button type="button" class="btn btn-secondary mt-2" id="addFormBtn">➕ Agregar producto</button>
+    </div>
+
+    <div class="d-flex justify-content-between">
+      <a href="{% url 'detalle_venta' venta.id %}" class="btn btn-outline-secondary">← Cancelar</a>
+      <button type="submit" class="btn btn-success">💾 Guardar Nota de Cambio</button>
+    </div>
+  </form>
+</div>
+
+<!-- ✅ SweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<!-- 🔹 Script principal AJAX -->
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const form = document.getElementById("notaCambioForm");
+  const formsetContainer = document.getElementById("formset-container");
+  const addFormBtn = document.getElementById("addFormBtn");
+  const totalForms = document.querySelector("#id_detallenotacambio_set-TOTAL_FORMS");
+
+  // --- 🔹 Enviar formulario por AJAX ---
+  form.addEventListener("submit", async function (e) {
+    e.preventDefault();
+
+    const formData = new FormData(form);
+
+    try {
+      const response = await fetch("", {
+        method: "POST",
+        body: formData,
+        headers: { "X-Requested-With": "XMLHttpRequest" },
+      });
+
+      const data = await response.json();
+
+      if (data.status === "success") {
+        Swal.fire({
+          icon: "success",
+          title: "Éxito",
+          text: data.message,
+          timer: 2000,
+          showConfirmButton: false
+        }).then(() => {
+          window.location.href = "{% url 'detalle_venta' venta.id %}";
+        });
+      } else if (data.status === "warning") {
+        Swal.fire({
+          icon: "warning",
+          title: "Atención",
+          text: data.message
+        });
+      } else {
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: data.message
+        });
+      }
+    } catch (err) {
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "⚠️ Error al procesar la solicitud."
+      });
+    }
+  });
+
+  // --- 🔹 Buscar producto al cambiar código ---
+  formsetContainer.addEventListener("change", async (e) => {
+    if (e.target.name.includes("codigo_devuelto") || e.target.name.includes("codigo_entregado")) {
+      const input = e.target;
+      const codigo = input.value.trim();
+      if (!codigo) return;
+
+      const parent = input.closest(".formset-item");
+      const infoBox = input.name.includes("codigo_devuelto")
+        ? parent.querySelector(".info-devuelto")
+        : parent.querySelector(".info-entregado");
+
+      infoBox.textContent = "🔍 Buscando producto...";
+
+      try {
+        const res = await fetch(`/inventory/api/producto/?codigo=${codigo}`);
+        const data = await res.json();
+
+        if (res.ok && data.Codigo) {
+          infoBox.innerHTML = `✅ <strong>${data.Diseno}</strong> - ${data.Color}, Talla ${data.Talla} (S/ ${data.Precio})`;
+        } else {
+          infoBox.textContent = "❌ Producto no encontrado.";
+        }
+      } catch {
+        infoBox.textContent = "⚠️ Error al buscar el producto.";
+      }
+    }
+  });
+
+  // --- 🔹 Agregar nuevo formulario dinámicamente ---
+  addFormBtn.addEventListener("click", function () {
+    const formCount = parseInt(totalForms.value);
+    const newForm = formsetContainer.querySelector(".formset-item").cloneNode(true);
+
+    newForm.querySelectorAll("input, select").forEach((el) => {
+      if (el.name) {
+        el.name = el.name.replace(`-${formCount - 1}-`, `-${formCount}-`);
+        el.id = el.id.replace(`-${formCount - 1}-`, `-${formCount}-`);
+      }
+      if (el.type === "text" || el.type === "number") el.value = "";
+    });
+
+    newForm.querySelector(".info-devuelto").textContent = "";
+    newForm.querySelector(".info-entregado").textContent = "";
+
+    totalForms.value = formCount + 1;
+    formsetContainer.appendChild(newForm);
+  });
+
+  // --- 🔹 Eliminar formulario ---
+  formsetContainer.addEventListener("click", (e) => {
+    if (e.target.classList.contains("remove-item")) {
+      const item = e.target.closest(".formset-item");
+      item.remove();
+      totalForms.value = parseInt(totalForms.value) - 1;
+    }
+  });
+});
+</script>
+
+{% endblock %}

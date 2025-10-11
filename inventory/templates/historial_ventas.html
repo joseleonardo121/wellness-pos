@@ -1,0 +1,164 @@
+{% extends 'base.html' %}
+
+{% block title %}Historial de Ventas{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4">📑 Historial de Ventas</h2>
+
+    <!-- 📌 Filtros -->
+    <div class="row mb-4">
+        <!-- Filtro por fecha -->
+        <div class="col-md-3">
+            <form method="get">
+                <input type="date" name="fecha" class="form-control" value="{{ fecha_filtro }}">
+                <button type="submit" class="btn btn-primary w-100 mt-2">Filtrar por Fecha</button>
+            </form>
+        </div>
+
+        <!-- Filtro por número de boleta -->
+        <div class="col-md-3">
+            <form method="get">
+                <input type="text" name="numero" class="form-control" placeholder="Número de boleta" value="{{ numero_filtro }}">
+                <button type="submit" class="btn btn-success w-100 mt-2">Filtrar por Boleta</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- 📌 Resumen por sucursal (solo admin) -->
+    {% if user.is_staff or user.is_superuser %}
+        {% if resumen_sucursales %}
+        <div class="mb-4">
+            <h5>📊 Resumen por Sucursal</h5>
+            <table class="table table-bordered table-sm">
+                <thead class="table-light">
+                    <tr>
+                        <th>Sucursal</th>
+                        <th>Total (S/)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for resumen in resumen_sucursales %}
+                    <tr>
+                        <td>
+                            {% if resumen.sucursal == "S1" %}Sucursal 1{% endif %}
+                            {% if resumen.sucursal == "S2" %}Sucursal 2{% endif %}
+                            {% if resumen.sucursal == "S3" %}Sucursal 3{% endif %}
+                            {% if resumen.sucursal == "A" %}Almacén{% endif %}
+                        </td>
+                        <td>S/ {{ resumen.total_sucursal|floatformat:2 }}</td>
+                    </tr>
+                    {% endfor %}
+                    <tr class="table-dark fw-bold">
+                        <td>Total General</td>
+                        <td>S/ {{ total_general|floatformat:2 }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        {% endif %}
+    {% endif %}
+
+    <!-- 📌 Tabla de boletas -->
+    <table class="table table-hover shadow-sm align-middle">
+        <thead class="table-dark">
+            <tr>
+                <th># Boleta</th>
+                <th>Fecha</th>
+                <th>Sucursal</th>
+                <th>Total (S/)</th>
+                <th>Método de Pago</th>
+                <th>Estado</th>
+                <th>Acción</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for venta in ventas %}
+            <tr class="{% if venta.estado == 'anulada' %}table-danger{% endif %}">
+                <td>
+                    {{ venta.numero }}
+                    {% if venta.notas_cambio.exists %}
+                        <span class="badge bg-warning text-dark">Cambio ✔</span>
+                    {% endif %}
+                </td>
+                <td>{{ venta.fecha|date:"d/m/Y H:i" }}</td>
+                <td>{{ venta.get_sucursal_display }}</td>
+                <td>S/ {{ venta.total|floatformat:2 }}</td>
+                <td>
+                    {% if venta.pagos.exists %}
+                        {% for pago in venta.pagos.all %}
+                            {{ pago.get_metodo_display }}: S/ {{ pago.monto|floatformat:2 }}<br>
+                        {% endfor %}
+                    {% else %}
+                        {{ venta.get_metodo_pago_display }}
+                    {% endif %}
+                </td>
+                <td>
+                    {% if venta.estado == "completada" %}
+                        <span class="badge bg-success">Completada</span>
+                    {% elif venta.estado == "pendiente" %}
+                        <span class="badge bg-warning text-dark">Pendiente</span>
+                    {% elif venta.estado == "anulada" %}
+                        <span class="badge bg-danger">Anulada</span>
+                    {% endif %}
+                </td>
+                <td>
+                    <a href="{% url 'detalle_venta' venta.id %}" class="btn btn-sm btn-info">
+                        Ver Detalle
+                    </a>
+                    <a href="{% url 'imprimir_venta' venta.id %}" target="_blank" class="btn btn-sm btn-secondary">
+                        🖨 Imprimir
+                    </a>
+
+                    {% if user.is_staff or user.is_superuser %}
+                        {% if venta.estado != "anulada" %}
+                        <form method="POST" action="{% url 'anular_venta' venta.id %}" class="d-inline anular-form">
+                            {% csrf_token %}
+                            <button type="button" class="btn btn-sm btn-danger btn-anular">
+                                ❌ Anular
+                            </button>
+                        </form>
+                        {% else %}
+                        <span class="text-muted fw-bold">Anulada</span>
+                        {% endif %}
+                    {% endif %}
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="7" class="text-center">No hay ventas registradas para este filtro.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- SweetAlert2 para confirmar anulación -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    const botones = document.querySelectorAll(".btn-anular");
+
+    botones.forEach(boton => {
+        boton.addEventListener("click", (e) => {
+            const form = boton.closest(".anular-form");
+
+            Swal.fire({
+                title: "¿Anular esta venta?",
+                text: "Esta acción no se puede deshacer y restaurará el stock.",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#d33",
+                cancelButtonColor: "#6c757d",
+                confirmButtonText: "Sí, anular",
+                cancelButtonText: "Cancelar"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    form.submit();
+                }
+            });
+        });
+    });
+});
+</script>
+{% endblock %}

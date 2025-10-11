@@ -1,0 +1,206 @@
+{% extends "base.html" %}
+{% block title %}Inventario | WELLNESS{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-4 py-3">
+
+    <!-- Encabezado -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="fw-bold text-primary">
+            <i class="bi bi-box-seam me-2"></i>Inventario de Productos
+        </h3>
+        {% if user.is_staff or user.is_superuser %}
+            <a href="{% url 'crear_producto' %}" class="btn btn-primary shadow-sm px-4 py-2 rounded-pill">
+                <i class="bi bi-plus-lg me-1"></i> Nuevo Producto
+            </a>
+        {% endif %}
+    </div>
+
+    <!-- 🔍 Búsqueda general -->
+    <form method="get" class="input-group mb-4 shadow-sm">
+        <span class="input-group-text bg-primary text-white"><i class="bi bi-search"></i></span>
+        <input type="text" name="q" value="{{ query|default:'' }}"
+               class="form-control form-control-lg"
+               placeholder="Escanea código o busca por marca, modelo, diseño, color o talla">
+        <button class="btn btn-outline-primary" type="submit">Buscar</button>
+    </form>
+
+    <!-- 🎛 Filtros -->
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-body">
+            <form method="get" class="row g-3 align-items-end">
+                <div class="col-md-2">
+                    <label class="form-label">Marca</label>
+                    <select name="marca" class="form-select form-select-sm">
+                        <option value="">Todas</option>
+                        {% for marca in marcas %}
+                            <option value="{{ marca }}" {% if marca == marca_filtro %}selected{% endif %}>{{ marca }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Modelo</label>
+                    <select name="modelo" class="form-select form-select-sm">
+                        <option value="">Todos</option>
+                        {% for modelo in modelos %}
+                            <option value="{{ modelo }}" {% if modelo == modelo_filtro %}selected{% endif %}>{{ modelo }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Diseño</label>
+                    <select name="diseno" class="form-select form-select-sm">
+                        <option value="">Todos</option>
+                        {% for diseno in disenos %}
+                            <option value="{{ diseno }}" {% if diseno == diseno_filtro %}selected{% endif %}>{{ diseno }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Color</label>
+                    <select name="color" class="form-select form-select-sm">
+                        <option value="">Todos</option>
+                        {% for color in colores %}
+                            <option value="{{ color }}" {% if color == color_filtro %}selected{% endif %}>{{ color }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Talla</label>
+                    <select name="talla" class="form-select form-select-sm">
+                        <option value="">Todas</option>
+                        {% for talla in tallas %}
+                            <option value="{{ talla }}" {% if talla == talla_filtro %}selected{% endif %}>{{ talla }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-2 d-flex gap-2">
+                    <button type="submit" class="btn btn-success btn-sm w-50">
+                        <i class="bi bi-funnel"></i> Filtrar
+                    </button>
+                    <a href="{% url 'lista_productos' %}" class="btn btn-secondary btn-sm w-50">
+                        <i class="bi bi-arrow-counterclockwise"></i> Limpiar
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 📋 Tabla de productos -->
+    <div class="table-responsive shadow-sm rounded-3">
+        <table class="table table-striped table-hover align-middle text-center mb-0" style="font-size: 0.85rem;">
+            <thead class="table-primary text-dark">
+                <tr>
+                    <th>Código</th>
+                    <th>Marca</th>
+                    <th>Modelo</th>
+                    <th>Diseño</th>
+                    <th>Color</th>
+                    <th>Talla</th>
+
+                    {% if user.is_staff or user.is_superuser %}
+                        <th>Costo</th>
+                    {% endif %}
+
+                    <th>Precio</th>
+                    <th>S1</th>
+                    <th>S2</th>
+                    <th>S3</th>
+                    <th>Almacén</th>
+                    <th>Total</th>
+                    <th>Código de Barras</th>
+
+                    {% if user.is_staff or user.is_superuser %}
+                        <th>Acciones</th>
+                    {% endif %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for producto in productos %}
+                <tr>
+                    <td class="fw-bold text-primary">{{ producto.Codigo }}</td>
+                    <td>{{ producto.Marca }}</td>
+                    <td>{{ producto.Modelo }}</td>
+                    <td>{{ producto.Diseno }}</td>
+                    <td>{{ producto.Color }}</td>
+                    <td>{{ producto.Talla }}</td>
+
+                    {% if user.is_staff or user.is_superuser %}
+                        <td><span class="badge bg-light text-dark">S/ {{ producto.Costo|floatformat:2 }}</span></td>
+                    {% endif %}
+
+                    <td><span class="badge bg-success">S/ {{ producto.Precio|floatformat:2 }}</span></td>
+                    <td>{{ producto.S1 }}</td>
+                    <td>{{ producto.S2 }}</td>
+                    <td>{{ producto.S3 }}</td>
+                    <td>{{ producto.Almacen }}</td>
+                    <td><strong>{{ producto.total }}</strong></td>
+                    <td>
+                        {% if producto.codigo_barras %}
+                            <img src="{{ producto.codigo_barras.url }}" 
+                                 alt="Código de barras" width="90" class="d-block mx-auto rounded shadow-sm">
+                        {% else %}
+                            <span class="text-muted">No generado</span>
+                        {% endif %}
+                    </td>
+
+                    {% if user.is_staff or user.is_superuser %}
+                    <td>
+                        <div class="d-flex justify-content-center gap-2 flex-wrap">
+                            <a href="{% url 'editar_producto' producto.Codigo %}" 
+                               class="btn btn-dark btn-sm px-3 py-2 shadow-sm rounded-3" title="Editar">
+                                <i class="bi bi-pencil me-1"></i> Editar
+                            </a>
+                            <a href="{% url 'eliminar_producto' producto.Codigo %}" 
+                               class="btn btn-danger btn-sm px-3 py-2 shadow-sm rounded-3" title="Eliminar">
+                                <i class="bi bi-trash me-1"></i> Eliminar
+                            </a>
+                            {% if producto.codigo_barras %}
+                            <button class="btn btn-outline-secondary btn-sm px-3 py-2 shadow-sm rounded-3"
+                                    onclick="printBarcode('{{ producto.codigo_barras.url }}')" title="Imprimir código">
+                                <i class="bi bi-printer me-1"></i> Imprimir
+                            </button>
+                            {% endif %}
+                        </div>
+                    </td>
+                    {% endif %}
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="{% if user.is_staff or user.is_superuser %}15{% else %}13{% endif %}" 
+                        class="text-center text-muted py-4">
+                        <i class="bi bi-inbox fs-4"></i><br>
+                        No se encontraron productos.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Script para imprimir código de barras -->
+<script>
+function printBarcode(url) {
+    const w = window.open("");
+    w.document.write("<img src='" + url + "' style='width:250px'>");
+    w.print();
+    w.close();
+}
+</script>
+
+<!-- Efectos suaves -->
+<style>
+.btn-sm {
+    font-size: 0.8rem;
+}
+.btn:hover {
+    transform: translateY(-2px);
+    transition: all 0.2s ease-in-out;
+}
+.table-hover tbody tr:hover {
+    background-color: #eef6ff !important;
+}
+</style>
+
+{% endblock %}

@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+
+{% block title %}Lista de Traspasos{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="text-primary">📦 Lista de Traspasos</h2>
+    <a href="{% url 'crear_traspaso' %}" class="btn btn-lg btn-primary">
+      ➕ Nuevo Traspaso
+    </a>
+  </div>
+
+  {% if traspasos %}
+  <div class="row g-3">
+    {% for traspaso in traspasos %}
+    <div class="col-md-6 col-lg-4">
+      <div class="card shadow-sm border-0 h-100">
+        <div class="card-header d-flex justify-content-between align-items-center
+          {% if traspaso.estado == 'pendiente' %}bg-warning text-dark
+          {% elif traspaso.estado == 'entregado' %}bg-success text-white
+          {% elif traspaso.estado == 'rechazado' %}bg-danger text-white{% endif %}">
+          <strong>Traspaso #{{ traspaso.id }}</strong>
+          <span class="badge 
+            {% if traspaso.estado == 'pendiente' %}bg-dark
+            {% elif traspaso.estado == 'entregado' %}bg-light text-success
+            {% elif traspaso.estado == 'rechazado' %}bg-light text-danger{% endif %}">
+            {{ traspaso.estado|capfirst }}
+          </span>
+        </div>
+        <div class="card-body">
+          <table class="table table-sm mb-2">
+            <tbody>
+              <tr>
+                <th>Producto:</th>
+                <td>{{ traspaso.producto.Codigo }}</td>
+              </tr>
+              <tr>
+                <th>Marca:</th>
+                <td>{{ traspaso.producto.Marca }}</td>
+              </tr>
+              <tr>
+                <th>Modelo:</th>
+                <td>{{ traspaso.producto.Modelo }}</td>
+              </tr>
+              <tr>
+                <th>Diseño:</th>
+                <td>{{ traspaso.producto.Diseno }}</td>
+              </tr>
+              <tr>
+                <th>Talla:</th>
+                <td>{{ traspaso.producto.Talla }}</td>
+              </tr>
+              <tr>
+                <th>Color:</th>
+                <td>{{ traspaso.producto.Color }}</td>
+              </tr>
+              <tr>
+                <th>Cantidad:</th>
+                <td>{{ traspaso.cantidad }}</td>
+              </tr>
+              <tr>
+                <th>Origen:</th>
+                <td>{{ traspaso.sucursal_origen }}</td>
+              </tr>
+              <tr>
+                <th>Destino:</th>
+                <td>{{ traspaso.sucursal_destino }}</td>
+              </tr>
+              <tr>
+                <th>Solicitado por:</th>
+                <td>{{ traspaso.solicitado_por.username }}</td>
+              </tr>
+              <tr>
+                <th>Fecha:</th>
+                <td>{{ traspaso.fecha_solicitud|date:"d/m/Y H:i" }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="card-footer d-flex justify-content-between">
+          {% if traspaso.estado == "pendiente" %}
+            <a href="{% url 'aprobar_traspaso' traspaso.id %}" class="btn btn-success btn-sm">✅ Aprobar</a>
+            <a href="{% url 'rechazar_traspaso' traspaso.id %}" class="btn btn-danger btn-sm">❌ Rechazar</a>
+          {% else %}
+            <span class="text-muted">No disponible</span>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="alert alert-info text-center shadow-sm">
+    No hay traspasos registrados.
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

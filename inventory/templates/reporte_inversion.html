@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}Inversión Mensual por Proveedor{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="fw-bold">💼 Inversión Mensual por Proveedor</h3>
+        <button onclick="window.print()" class="btn btn-primary shadow-sm">
+            <i class="bi bi-printer"></i> Imprimir Reporte
+        </button>
+    </div>
+
+    <form method="get" class="mb-3 d-flex gap-2">
+        <input type="number" name="anio" placeholder="Año" value="{{ anio }}" class="form-control" style="width:120px;">
+        <input type="number" name="mes" placeholder="Mes" min="1" max="12" value="{{ mes }}" class="form-control" style="width:120px;">
+        <button type="submit" class="btn btn-primary">Filtrar</button>
+        <a href="{% url 'reporte_inversion_mensual' %}" class="btn btn-secondary">Limpiar</a>
+    </form>
+
+    {% if inversion_proveedores %}
+        <div class="row g-4">
+            {% for inv in inversion_proveedores %}
+            <div class="col-md-6 col-lg-4">
+                <div class="card shadow-sm h-100 border-0 rounded-3">
+                    <div class="card-header bg-dark text-white text-center fw-bold">
+                        {{ inv.proveedor__nombre_empresa }}
+                    </div>
+                    <div class="card-body">
+                        <p class="fw-bold text-success mb-3">Total Invertido: S/. {{ inv.total_invertido|floatformat:2 }}</p>
+                        
+                        <h6 class="fw-bold text-secondary">Compras Registradas:</h6>
+                        <ul class="list-group list-group-flush">
+                            {% for compra in inv.compras %}
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                {{ compra.descripcion }}
+                                <span>S/. {{ compra.monto|floatformat:2 }}</span>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="alert alert-warning text-center shadow-sm" role="alert">
+            No hay compras registradas para este mes.
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

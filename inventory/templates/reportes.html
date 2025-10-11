@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+{% block title %}Reportes{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <h3 class="mb-4">📊 Reportes de Inventario y Ventas</h3>
+            <div class="text-end my-3">
+            <a href="{% url 'exportar_reportes_pdf' %}" class="btn btn-danger">
+                📄 Descargar Reporte en PDF
+            </a>
+        </div>
+    <!-- -------------------------
+         Inversiones
+         ------------------------- -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-6 col-lg-3">
+            <div class="card shadow-sm text-center p-3 border-success">
+                <h6>Total Inversión</h6>
+                <h3 class="text-success">S/. {{ inversion_total|floatformat:2 }}</h3>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-3">
+            <div class="card shadow-sm text-center p-3 border-primary">
+                <h6>Inversión S1</h6>
+                <h3 class="text-primary">S/. {{ inversion_s1|floatformat:2 }}</h3>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-3">
+            <div class="card shadow-sm text-center p-3 border-info">
+                <h6>Inversión S2</h6>
+                <h3 class="text-info">S/. {{ inversion_s2|floatformat:2 }}</h3>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-3">
+            <div class="card shadow-sm text-center p-3 border-warning">
+                <h6>Inversión S3</h6>
+                <h3 class="text-warning">S/. {{ inversion_s3|floatformat:2 }}</h3>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-3">
+            <div class="card shadow-sm text-center p-3 border-dark">
+                <h6>Inversión Almacén</h6>
+                <h3 class="text-dark">S/. {{ inversion_almacen|floatformat:2 }}</h3>
+            </div>
+        </div>
+    </div>
+
+    <!-- -------------------------
+         Ventas del Mes
+         ------------------------- -->
+    <h4 class="mb-3 mt-5">🛒 Ventas del Mes ({{ now|date:"F Y" }})</h4>
+    <div class="row g-3">
+        <div class="col-md-4">
+            <div class="card shadow-sm p-3 border-primary">
+                <h6>Sucursal 1</h6>
+                <p>Total vendido: <strong>S/. {{ ventas_s1|floatformat:2 }}</strong></p>
+                <p>Productos vendidos: <strong>{{ productos_vendidos_s1 }}</strong></p>
+                <p>Ganancia: <strong class="text-success">S/. {{ ganancia_s1|floatformat:2 }}</strong></p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card shadow-sm p-3 border-info">
+                <h6>Sucursal 2</h6>
+                <p>Total vendido: <strong>S/. {{ ventas_s2|floatformat:2 }}</strong></p>
+                <p>Productos vendidos: <strong>{{ productos_vendidos_s2 }}</strong></p>
+                <p>Ganancia: <strong class="text-success">S/. {{ ganancia_s2|floatformat:2 }}</strong></p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card shadow-sm p-3 border-warning">
+                <h6>Sucursal 3</h6>
+                <p>Total vendido: <strong>S/. {{ ventas_s3|floatformat:2 }}</strong></p>
+                <p>Productos vendidos: <strong>{{ productos_vendidos_s3 }}</strong></p>
+                <p>Ganancia: <strong class="text-success">S/. {{ ganancia_s3|floatformat:2 }}</strong></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- -------------------------
+         Boletas del Mes
+         ------------------------- -->
+    <h4 class="mb-3 mt-5">🧾 Boletas Emitidas ({{ now|date:"F Y" }})</h4>
+    <div class="row g-3">
+        <div class="col-md-3">
+            <div class="card shadow-sm text-center p-3 border-primary">
+                <h6>Sucursal 1</h6>
+                <h3 class="text-primary">{{ boletas_s1 }}</h3>
+                <small>Boletas emitidas</small>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card shadow-sm text-center p-3 border-info">
+                <h6>Sucursal 2</h6>
+                <h3 class="text-info">{{ boletas_s2 }}</h3>
+                <small>Boletas emitidas</small>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card shadow-sm text-center p-3 border-warning">
+                <h6>Sucursal 3</h6>
+                <h3 class="text-warning">{{ boletas_s3 }}</h3>
+                <small>Boletas emitidas</small>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card shadow-sm text-center p-3 border-dark">
+                <h6>Almacén</h6>
+                <h3 class="text-dark">{{ boletas_almacen }}</h3>
+                <small>Boletas emitidas</small>
+            </div>
+        </div>
+        <div class="col-md-12">
+            <div class="card shadow-sm text-center p-3 border-success">
+                <h6>Total General</h6>
+                <h2 class="text-success">{{ boletas_total }}</h2>
+                <small>Total de clientes atendidos</small>
+            </div>
+        </div>
+    </div>
+
+    <!-- -------------------------
+         Historial Boletas por Mes
+         ------------------------- -->
+</div>
+{% endblock %}

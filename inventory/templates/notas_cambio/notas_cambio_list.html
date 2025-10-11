@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>📋 Listado de Notas de Cambio</h2>
+
+    <table class="table table-striped mt-3">
+        <thead>
+            <tr>
+                <th>N° Nota</th>
+                <th>Venta Origen</th>
+                <th>Fecha</th>
+                <th>Vendedor</th>
+                <th>Sucursal</th>
+                <th>Diferencia</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for nota in notas %}
+            <tr>
+                <td>{{ nota.numero }}</td>
+                <td>{{ nota.venta_origen.numero }}</td>
+                <td>{{ nota.fecha|date:"d/m/Y H:i" }}</td>
+                <td>{{ nota.vendedor.username }}</td>
+                <td>{{ nota.get_sucursal_display }}</td>
+                <td>S/. {{ nota.diferencia }}</td>
+                <td>
+                    <a href="{% url 'detalle_nota_cambio' nota.id %}" class="btn btn-sm btn-primary">Ver Detalle</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="7" class="text-center">No hay notas de cambio registradas.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

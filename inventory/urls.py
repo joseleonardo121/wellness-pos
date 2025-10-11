@@ -1,0 +1,50 @@
+from django.urls import path
+from . import views
+
+urlpatterns = [
+    path("", views.home, name="home"),
+    path("productos/", views.lista_productos, name="lista_productos"),
+    path("crear/", views.crear_producto, name="crear_producto"),
+    path("editar/<str:pk>/", views.editar_producto, name="editar_producto"),
+    path("eliminar/<str:pk>/", views.eliminar_producto, name="eliminar_producto"),
+    path("login/", views.login_view, name="login"),
+    path("ventas/<int:pk>/", views.detalle_venta, name="detalle_venta"),
+    #path("ventas/", views.lista_ventas, name="lista_ventas"),
+    path("logout/", views.logout_view, name="logout"),
+    path("reportes/", views.reportes, name="reportes"),  # 👈 nuevo
+    path("reportes/pdf/", views.exportar_reportes_pdf, name="exportar_reportes_pdf"),
+    path("reportes/historicos/", views.reportes_historicos, name="reportes_historicos"),  # vista nueva
+    path("reportes/generar/", views.generar_reporte_mensual, name="generar_reporte_mensual"),
+    path('ventas/buscar-producto/', views.buscar_producto, name='buscar_producto'),
+    path("ventas/crear/", views.crear_venta, name="crear_venta"),
+    path("ventas/historial/", views.historial_ventas, name="historial_ventas"),  # 👈 agrega esta línea
+    path("api/producto/", views.api_producto, name="api_producto"),
+    path('traspasos/crear/', views.crear_traspaso, name='crear_traspaso'),
+    path("traspasos/", views.lista_traspasos, name="lista_traspasos"),
+    path('traspasos/aprobar/<int:traspaso_id>/', views.aprobar_traspaso, name='aprobar_traspaso'),
+    path('traspasos/rechazar/<int:traspaso_id>/', views.rechazar_traspaso, name='rechazar_traspaso'),
+    path("traspasos/nuevo/", views.crear_traspaso, name="crear_traspaso"),
+    path("traspasos/rechazar/<int:traspaso_id>/", views.rechazar_traspaso, name="rechazar_traspaso"),
+    path("productos-a-bajar/", views.productos_a_bajar, name="productos_a_bajar"),
+    path("productos-a-pedir/", views.productos_a_pedir, name="productos_a_pedir"),
+    path('buscar-producto/', views.buscar_producto, name='buscar_producto'),
+    path('proveedores/', views.listar_proveedores, name='listar_proveedores'),
+    path('proveedores/crear/', views.crear_proveedor, name='crear_proveedor'),
+    path('proveedores/editar/<int:pk>/', views.editar_proveedor, name='editar_proveedor'),
+    path('proveedores/eliminar/<int:pk>/', views.eliminar_proveedor, name='eliminar_proveedor'),
+    path('reportes/inversion/', views.reporte_inversion_mensual, name='reporte_inversion_mensual'),
+    path('compras/', views.listar_compras, name='listar_compras'),
+    path('compras/crear/', views.crear_compra, name='crear_compra'),
+    path('compras/editar/<int:pk>/', views.editar_compra, name='editar_compra'),
+    path('compras/eliminar/<int:pk>/', views.eliminar_compra, name='eliminar_compra'),
+    path('clientes/', views.listar_clientes, name='listar_clientes'),
+    path('clientes/crear/', views.crear_cliente, name='crear_cliente'),
+    path('clientes/editar/<int:pk>/', views.editar_cliente, name='editar_cliente'),
+    path('clientes/eliminar/<int:pk>/', views.eliminar_cliente, name='eliminar_cliente'),
+    path("notas-cambio/", views.lista_notas_cambio, name="lista_notas_cambio"),
+    path("notas-cambio/<int:pk>/", views.detalle_nota_cambio, name="detalle_nota_cambio"),
+    path("ventas/<int:venta_id>/nota-cambio/", views.crear_nota_cambio, name="crear_nota_cambio"),
+    path('ventas/<int:venta_id>/imprimir/', views.imprimir_venta, name='imprimir_venta'),
+    path('ventas/anular/<int:venta_id>/', views.anular_venta, name='anular_venta'),
+
+]

@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Crear Nota de Cambio{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+  <h2>Nota de Cambio para Venta {{ venta.numero }}</h2>
+  <form method="post">
+    {% csrf_token %}
+
+    <div class="mb-3">
+      <label class="form-label">Descripción</label>
+      <textarea name="descripcion" class="form-control"></textarea>
+    </div>
+
+    <h4>Productos vendidos</h4>
+    <p>Selecciona los productos que devuelve el cliente:</p>
+    {% for detalle in detalles %}
+      <div class="form-check">
+        <input class="form-check-input" type="checkbox" name="productos_devueltos" value="{{ detalle.id }}">
+        <label class="form-check-label">
+          {{ detalle.producto }} ({{ detalle.cantidad }}) - S/. {{ detalle.precio }}
+        </label>
+      </div>
+    {% endfor %}
+
+    <h4 class="mt-4">Productos entregados en el cambio</h4>
+    <p>(En esta primera versión usamos los mismos productos de la venta como prueba, luego lo abrimos al inventario)</p>
+    {% for detalle in detalles %}
+      <div class="form-check">
+        <input class="form-check-input" type="checkbox" name="productos_nuevos" value="{{ detalle.id }}">
+        <label class="form-check-label">
+          {{ detalle.producto }} ({{ detalle.cantidad }}) - S/. {{ detalle.precio }}
+        </label>
+      </div>
+    {% endfor %}
+
+    <button type="submit" class="btn btn-primary mt-3">Generar Nota de Cambio</button>
+  </form>
+</div>
+{% endblock %}

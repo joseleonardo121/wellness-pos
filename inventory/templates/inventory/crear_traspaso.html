@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+
+{% block title %}Nuevo Traspaso{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+  <h2>➕ Nuevo Traspaso de Mercadería</h2>
+  <hr>
+
+  <form method="POST" action="{% url 'crear_traspaso' %}">
+    {% csrf_token %}
+    
+    <!-- Campo de búsqueda por código -->
+    <div class="mb-3">
+      <label for="codigo" class="form-label">Código de Producto</label>
+      <input type="text" id="codigo" class="form-control" placeholder="Escanee o ingrese el código">
+      <small class="text-muted">Escanee el código de barras o escríbalo y presione Enter</small>
+    </div>
+
+    <!-- Producto encontrado -->
+    <div class="mb-3" id="producto-info" style="display: none;">
+      <label class="form-label">Producto encontrado</label>
+      <input type="text" id="producto_nombre" class="form-control" readonly>
+      <input type="hidden" name="producto_id" id="producto_id">
+    </div>
+
+    <div class="mb-3">
+      <label for="cantidad" class="form-label">Cantidad</label>
+      <input type="number" name="cantidad" id="cantidad" class="form-control" min="1" required>
+    </div>
+
+    <div class="mb-3">
+      <label for="sucursal_origen" class="form-label">Sucursal Origen</label>
+      <select name="sucursal_origen" id="sucursal_origen" class="form-select" required>
+        <option value="S1">Sucursal 1</option>
+        <option value="S2">Sucursal 2</option>
+        <option value="S3">Sucursal 3</option>
+        <option value="A">Almacén</option>
+      </select>
+    </div>
+
+    <div class="mb-3">
+      <label for="sucursal_destino" class="form-label">Sucursal Destino</label>
+      <select name="sucursal_destino" id="sucursal_destino" class="form-select" required>
+        <option value="S1">Sucursal 1</option>
+        <option value="S2">Sucursal 2</option>
+        <option value="S3">Sucursal 3</option>
+        <option value="A">Almacén</option>
+      </select>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Confirmar Traspaso</button>
+    <a href="{% url 'lista_traspasos' %}" class="btn btn-secondary">Cancelar</a>
+  </form>
+</div>
+
+<script>
+document.getElementById("codigo").addEventListener("keypress", function(e) {
+    if (e.key === "Enter") {
+        e.preventDefault();
+        const codigo = this.value.trim();
+        if (codigo) {
+            fetch(`/inventory/buscar-producto/?codigo=${codigo}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        alert(data.error);
+                        document.getElementById("producto-info").style.display = "none";
+                    } else {
+                        document.getElementById("producto_nombre").value =
+                          `${data.nombre} - Precio: S/. ${data.precio}`;
+                        document.getElementById("producto_id").value = data.codigo;
+                        document.getElementById("producto-info").style.display = "block";
+                    }
+                })
+                .catch(error => console.error("Error:", error));
+        }
+    }
+});
+</script>
+{% endblock %}

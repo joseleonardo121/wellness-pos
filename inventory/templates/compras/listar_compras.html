@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}Compras Registradas{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="fw-bold">💰 Compras Registradas</h3>
+        <a href="{% url 'crear_compra' %}" class="btn btn-success shadow-sm">
+            <i class="bi bi-plus-circle"></i> Nueva Compra
+        </a>
+    </div>
+
+    {% if compras %}
+        <table class="table table-striped shadow-sm">
+            <thead class="table-dark">
+                <tr>
+                    <th>Proveedor</th>
+                    <th>Descripción</th>
+                    <th>Monto</th>
+                    <th>Fecha</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for compra in compras %}
+                <tr>
+                    <td>{{ compra.proveedor.nombre_empresa }}</td>
+                    <td>{{ compra.descripcion }}</td>
+                    <td>S/. {{ compra.monto|floatformat:2 }}</td>
+                    <td>{{ compra.fecha }}</td>
+                    <td>
+                        <a href="{% url 'editar_compra' compra.pk %}" class="btn btn-sm btn-warning">Editar</a>
+                        <a href="{% url 'eliminar_compra' compra.pk %}" class="btn btn-sm btn-danger">Eliminar</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <div class="alert alert-warning text-center shadow-sm">
+            No hay compras registradas.
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

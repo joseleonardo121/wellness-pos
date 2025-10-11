@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}{% if cliente %}Editar Cliente{% else %}Nuevo Cliente{% endif %}{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="card shadow-sm rounded-3">
+        <div class="card-header bg-primary text-white fw-bold">
+            {% if cliente %}Editar Cliente{% else %}Nuevo Cliente{% endif %}
+        </div>
+        <div class="card-body">
+            <form method="post" class="row g-3">
+                {% csrf_token %}
+                <div class="col-md-6">
+                    <label class="form-label fw-bold">Nombres</label>
+                    {{ form.nombres }}
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-bold">Celular</label>
+                    {{ form.celular }}
+                </div>
+                <div class="col-12 mt-3">
+                    <button type="submit" class="btn btn-primary">
+                        {% if cliente %}Actualizar{% else %}Crear{% endif %}
+                    </button>
+                    <a href="{% url 'listar_clientes' %}" class="btn btn-secondary ms-2">Cancelar</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

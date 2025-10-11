@@ -1,0 +1,143 @@
+{% extends 'base.html' %}
+
+{% block title %}Nuevo Traspaso{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+  <div class="card shadow-sm p-4">
+    <h2 class="mb-3 text-primary">➕ Nuevo Traspaso de Mercadería</h2>
+    <p class="text-muted mb-4">Ingrese el producto, cantidad y seleccione sucursal origen y destino.</p>
+
+    <form method="POST" action="{% url 'crear_traspaso' %}" id="traspasoForm">
+      {% csrf_token %}
+      
+      <!-- Buscador con icono -->
+      <div class="mb-3">
+        <label for="codigo" class="form-label fw-bold">Escanear / Ingresar Código</label>
+        <div class="input-group">
+          <span class="input-group-text">🔍</span>
+          <input type="text" id="codigo" name="codigo" class="form-control" placeholder="Escanee o escriba el código" autofocus>
+        </div>
+      </div>
+
+      <!-- Campo oculto para producto encontrado -->
+      <input type="hidden" name="producto_id" id="producto_id">
+
+      <!-- Tabla de producto encontrado -->
+      <div id="previewProducto" class="card shadow-sm p-3 mb-4 d-none">
+        <h5 class="text-success">📦 Producto encontrado</h5>
+        <table class="table table-sm table-bordered table-hover text-center mb-0">
+          <thead class="table-light">
+            <tr>
+              <th>Código</th>
+              <th>Marca</th>
+              <th>Modelo</th>
+              <th>Diseño</th>
+              <th>Talla</th>
+              <th>Color</th>
+              <th>Precio (S/)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td id="pvCodigo"></td>
+              <td id="pvMarca"></td>
+              <td id="pvModelo"></td>
+              <td id="pvDiseno"></td>
+              <td id="pvTalla"></td>
+              <td id="pvColor"></td>
+              <td id="pvPrecio"></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Cantidad y sucursales en grid -->
+      <div class="row g-3 mb-4">
+        <div class="col-md-4">
+          <label for="cantidad" class="form-label fw-bold">Cantidad</label>
+          <input type="number" name="cantidad" id="cantidad" class="form-control" min="1" required>
+        </div>
+        <div class="col-md-4">
+          <label for="sucursal_origen" class="form-label fw-bold">Sucursal Origen</label>
+          <select name="sucursal_origen" id="sucursal_origen" class="form-select" required>
+            <option value="S1">Sucursal 1</option>
+            <option value="S2">Sucursal 2</option>
+            <option value="S3">Sucursal 3</option>
+            <option value="A">Almacén</option>
+          </select>
+        </div>
+        <div class="col-md-4">
+          <label for="sucursal_destino" class="form-label fw-bold">Sucursal Destino</label>
+          <select name="sucursal_destino" id="sucursal_destino" class="form-select" required>
+            <option value="S1">Sucursal 1</option>
+            <option value="S2">Sucursal 2</option>
+            <option value="S3">Sucursal 3</option>
+            <option value="A">Almacén</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Botones -->
+      <div class="text-end">
+        <button type="submit" class="btn btn-lg btn-primary me-2">✅ Confirmar Traspaso</button>
+        <a href="{% url 'lista_traspasos' %}" class="btn btn-lg btn-secondary">❌ Cancelar</a>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+const codigoInput = document.getElementById("codigo");
+const infoDiv = document.getElementById("producto-info");
+const inputHidden = document.getElementById("producto_id");
+const previewCard = document.getElementById("previewProducto");
+
+// Función para buscar producto
+function buscarProducto() {
+    let codigo = codigoInput.value.trim();
+    if (!codigo) return;
+
+    fetch("{% url 'buscar_producto' %}?codigo=" + encodeURIComponent(codigo))
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                let p = data.producto;
+                
+                // Llenar tabla
+                document.getElementById("pvCodigo").innerText = p.codigo || "-";
+                document.getElementById("pvMarca").innerText = p.marca || "-";
+                document.getElementById("pvModelo").innerText = p.modelo || "-";
+                document.getElementById("pvDiseno").innerText = p.diseno || "-";
+                document.getElementById("pvTalla").innerText = p.talla || "-";
+                document.getElementById("pvColor").innerText = p.color || "-";
+                document.getElementById("pvPrecio").innerText = p.precio.toFixed(2);
+
+                inputHidden.value = p.codigo;  // guardar en hidden
+                previewCard.classList.remove("d-none");
+            } else {
+                previewCard.classList.add("d-none");
+                inputHidden.value = "";
+                alert(data.error);
+            }
+        })
+        .catch(err => {
+            console.error("Error buscando producto:", err);
+            previewCard.classList.add("d-none");
+            inputHidden.value = "";
+            alert("Error en la búsqueda");
+        });
+}
+
+// Buscar al presionar Enter
+codigoInput.addEventListener("keypress", function(e) {
+    if (e.key === "Enter") {
+        e.preventDefault();
+        buscarProducto();
+    }
+});
+
+// También buscar al perder el foco
+codigoInput.addEventListener("change", buscarProducto);
+</script>
+{% endblock %}

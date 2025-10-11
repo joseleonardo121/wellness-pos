@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block title %}Crear Nota de Cambio{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4">📝 Crear Nota de Cambio</h2>
+
+    <!-- Información de la venta original -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-dark text-white">
+            Venta Origen
+        </div>
+        <div class="card-body">
+            <p><strong>Número de Boleta:</strong> {{ venta.numero }}</p>
+            <p><strong>Fecha:</strong> {{ venta.fecha|date:"d/m/Y H:i" }}</p>
+            <p><strong>Sucursal:</strong> {{ venta.get_sucursal_display }}</p>
+            <p><strong>Total:</strong> S/ {{ venta.total|floatformat:2 }}</p>
+        </div>
+    </div>
+
+    <!-- Formulario de Nota de Cambio -->
+    <form method="post">
+        {% csrf_token %}
+
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-primary text-white">
+                Datos de la Nota de Cambio
+            </div>
+            <div class="card-body">
+                {{ form.as_p }}
+            </div>
+        </div>
+
+        <!-- Formset de Detalles -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-secondary text-white">
+                Productos en el Cambio
+            </div>
+            <div class="card-body">
+                {{ formset.management_form }}
+                <table class="table table-bordered">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Producto Devuelto</th>
+                            <th>Producto Entregado</th>
+                            <th>Cantidad</th>
+                            <th>Eliminar</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for form in formset %}
+                        <tr>
+                            <td>{{ form.producto_devuelto }}</td>
+                            <td>{{ form.producto_entregado }}</td>
+                            <td>{{ form.cantidad }}</td>
+                            <td>{{ form.DELETE }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <p class="text-muted">👉 Puedes agregar o quitar filas para registrar varios productos.</p>
+            </div>
+        </div>
+
+        <!-- Botones -->
+        <div class="d-flex justify-content-between">
+            <a href="{% url 'detalle_venta' venta.id %}" class="btn btn-outline-secondary">
+                ← Cancelar
+            </a>
+            <button type="submit" class="btn btn-success">
+                💾 Guardar Nota de Cambio
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}

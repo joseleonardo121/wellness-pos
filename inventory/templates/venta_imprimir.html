@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block title %}Imprimir Venta - {{ venta.numero }}{% endblock %}
+
+{% block content %}
+<div class="ticket-container">
+    <h2 style="text-align:center;">WELLNESS Ropa Deportiva</h2>
+    <p style="text-align:center;">Nota: {{ venta.numero }}</p>
+    <p style="text-align:center;">Fecha: {{ venta.fecha|date:"d/m/Y H:i" }}</p>
+    <p style="text-align:center;">Sucursal: {{ venta.get_sucursal_display }}</p>
+    <p style="text-align:center;">Vendedor: {{ venta.vendedor }}</p>
+    <p style="text-align:center;">Celular 958 724 664</p>
+    <p style="text-align:center;">MÁS QUE UN DEPORTE, UN ESTILO DE VIDA
+                                        WELLNESS
+    </p>
+
+
+    <hr>
+    <table style="width:100%; font-size:12px; border-collapse: collapse;">
+        <thead>
+            <tr>
+                <th>Producto</th>
+                <th style="text-align:center;">Cant.</th>
+                <th style="text-align:right;">Subtotal</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for detalle in venta.detalles.all %}
+            <tr>
+                <td>{{ detalle.producto.Marca }} {{ detalle.producto.Modelo }} {{ detalle.producto.Color }} {{ detalle.producto.Talla }}</td>
+                <td style="text-align:center;">{{ detalle.cantidad }}</td>
+                <td style="text-align:right;">S/ {{ detalle.subtotal|floatformat:2 }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <hr>
+    <p style="text-align:right; font-weight:bold;">Total: S/ {{ venta.total|floatformat:2 }}</p>
+
+    {% if venta.notas_cambio.exists %}
+    <p style="text-align:center; font-size:11px; color:red;">⚠ Nota: Esta venta tiene cambios realizados</p>
+    {% endif %}
+
+    <p style="text-align:center; font-size:10px;">¡Gracias por tu compra!</p>
+    <p style="text-align:center; font-size:10px;"> SE ACEPTAN CAMBIOS/NO <STROng>DEVOLUCIONES</STROng></p>
+
+    <div style="text-align:center; margin-top:10px;">
+        <button onclick="window.print()" class="btn btn-primary">🖨 Imprimir</button>
+    </div>
+</div>
+
+<style>
+/* Estilo para impresión en ticket largo */
+@media print {
+    body {
+        width: 80mm;
+        margin: 0;
+        font-family: monospace;
+        font-size: 12px;
+    }
+    .btn {
+        display: none;
+    }
+    .ticket-container {
+        width: 80mm;
+    }
+}
+.ticket-container {
+    width: 80mm;
+    margin: 0 auto;
+    font-family: monospace;
+    font-size: 12px;
+}
+hr {
+    border-top: 1px dashed #000;
+}
+</style>
+{% endblock %}
