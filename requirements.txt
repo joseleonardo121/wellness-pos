@@ -1,6 +1,6 @@
 # Render build dependencies
-setuptools>=65.5.0
-wheel>=0.38.0
+setuptools>=68.0.0
+wheel>=0.40.0
 gunicorn
 build
 
