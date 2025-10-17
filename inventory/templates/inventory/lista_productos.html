@@ -137,7 +137,9 @@
                     <td><strong>{{ producto.total }}</strong></td>
                     <td>
                         {% if producto.codigo_barras %}
-                            <img src="{{ producto.codigo_barras.url }}" 
+                            <img src="data:image/png;base64,{{ producto.get_barcode_base64 }}" 
+                            alt="Código de barras" width="90" class="d-block mx-auto rounded shadow-sm">
+
                                  alt="Código de barras" width="90" class="d-block mx-auto rounded shadow-sm">
                         {% else %}
                             <span class="text-muted">No generado</span>

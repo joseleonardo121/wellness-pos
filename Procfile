@@ -1,1 +1,1 @@
-web: gunicorn wellness.wsgi
+web: gunicorn wellness.wsgi:application

@@ -1,5 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import User
+import io, base64, barcode
+from barcode.writer import ImageWriter
+
 
 # Create your models here.
 from django.db import models
@@ -125,6 +128,11 @@ class Productos(models.Model):
 
         super().save(*args, **kwargs)
 
+    def get_barcode_base64(self):
+        EAN = barcode.get_barcode_class('code128')
+        buffer = io.BytesIO()
+        EAN(self.Codigo, writer=ImageWriter()).write(buffer)
+        return base64.b64encode(buffer.getvalue()).decode('utf-8')
 
 
 

@@ -10,9 +10,10 @@ from django.utils import timezone
 
 from django.shortcuts import redirect
 from django.contrib.auth.decorators import login_required
-
-
-
+import io
+import barcode
+from barcode.writer import ImageWriter
+from PIL import Image
 from django.shortcuts import render, redirect, get_object_or_404
 from django.forms import formset_factory
 from django.contrib import messages
