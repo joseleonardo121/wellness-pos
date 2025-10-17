@@ -1311,3 +1311,8 @@ def anular_venta(request, venta_id):
 
     messages.success(request, "❌ Venta anulada correctamente. El stock fue restaurado.")
     return redirect("historial_ventas")
+
+
+def imprimir_codigo_barras(request, codigo):
+    producto = get_object_or_404(Productos, Codigo=codigo)
+    return render(request, 'imprimir_codigo.html', {'producto': producto})

@@ -137,7 +137,7 @@
                     <td><strong>{{ producto.total }}</strong></td>
                     <td>
                         {% if producto.codigo_barras %}
-                            <img src="data:image/png;base64,{{ producto.get_barcode_base64 }}" 
+                            <img src="data:image/png;base64,{{ producto.get_barcode_base64 }}">
                         {% else %}
                             <span class="text-muted">No generado</span>
                         {% endif %}
@@ -155,10 +155,12 @@
                                 <i class="bi bi-trash me-1"></i> Eliminar
                             </a>
                             {% if producto.codigo_barras %}
-                            <button class="btn btn-outline-secondary btn-sm px-3 py-2 shadow-sm rounded-3"
-                                    onclick="printBarcode('{{ producto.codigo_barras.url }}')" title="Imprimir código">
-                                <i class="bi bi-printer me-1"></i> Imprimir
-                            </button>
+                            <a href="{% url 'imprimir_codigo_barras' producto.Codigo %}" 
+                            target="_blank"
+                            class="btn btn-outline-secondary btn-sm px-3 py-2 shadow-sm rounded-3"
+                            title="Imprimir código">
+                            <i class="bi bi-printer me-1"></i> Imprimir
+                            </a>
                             {% endif %}
                         </div>
                     </td>

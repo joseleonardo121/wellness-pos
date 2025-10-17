@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Imprimir Código de Barras</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: white;
+        }
+        img {
+            width: 250px;
+        }
+    </style>
+</head>
+<body onload="window.print()">
+    {% if producto.codigo_barras %}
+        <img src="{{ producto.codigo_barras.url }}" alt="Código de barras">
+    {% else %}
+        <p>No se encontró el código de barras.</p>
+    {% endif %}
+</body>
+</html>
