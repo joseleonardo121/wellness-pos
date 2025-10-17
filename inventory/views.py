@@ -1316,3 +1316,10 @@ def anular_venta(request, venta_id):
 def imprimir_codigo_barras(request, codigo):
     producto = get_object_or_404(Productos, Codigo=codigo)
     return render(request, 'imprimir_codigo.html', {'producto': producto})
+
+from django.shortcuts import render, get_object_or_404
+from .models import Productos
+
+def imprimir_codigo(request, producto_id):
+    producto = get_object_or_404(Productos, id=producto_id)
+    return render(request, 'inventario/imprimir_codigo.html', {'producto': producto})

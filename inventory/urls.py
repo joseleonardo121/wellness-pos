@@ -47,5 +47,6 @@ urlpatterns = [
     path('ventas/<int:venta_id>/imprimir/', views.imprimir_venta, name='imprimir_venta'),
     path('ventas/anular/<int:venta_id>/', views.anular_venta, name='anular_venta'),
     path('productos/imprimir/<str:codigo>/', views.imprimir_codigo_barras, name='imprimir_codigo_barras'),
+    path('imprimir-codigo/<int:producto_id>/', views.imprimir_codigo, name='imprimir_codigo'),
 
 ]

@@ -137,8 +137,9 @@
                     <td><strong>{{ producto.total }}</strong></td>
                     <td>
                         {% if producto.codigo_barras %}
-                            <img src="data:image/png;base64,{{ producto.get_barcode_base64 }}">
-                        {% else %}
+                    <img src="data:image/png;base64,{{ producto.get_barcode_base64 }}"
+                    alt="Código de barras"
+                    style="width:120px; height:auto; display:block; margin:auto;">                        {% else %}
                             <span class="text-muted">No generado</span>
                         {% endif %}
                     </td>

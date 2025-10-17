@@ -1,26 +1,107 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Imprimir Código de Barras</title>
-    <style>
-        body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            background: white;
-        }
-        img {
-            width: 250px;
-        }
-    </style>
-</head>
-<body onload="window.print()">
-    {% if producto.codigo_barras %}
-        <img src="{{ producto.codigo_barras.url }}" alt="Código de barras">
-    {% else %}
-        <p>No se encontró el código de barras.</p>
-    {% endif %}
-</body>
-</html>
+
+{% block content %}
+<div class="etiqueta-container">
+    <div class="etiqueta">
+        <p class="marca">WELLNESS</p>
+
+        <!-- Código de barras centrado -->
+        <div class="barcode-wrapper">
+            <img src="data:image/png;base64,{{ producto.get_barcode_base64 }}" alt="Código de barras">
+        </div>
+    </div>
+
+    <!-- Botón visible solo en pantalla -->
+    <div class="acciones">
+        <button onclick="window.print()" class="btn btn-primary btn-sm">
+            🖨 Imprimir
+        </button>
+    </div>
+</div>
+
+<style>
+/* 🧾 Estilo general */
+.etiqueta-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-family: "Arial", sans-serif;
+}
+
+/* 🏷️ Tamaño de etiqueta */
+.etiqueta {
+    width: 6cm;       /* ajusta según tu rollo (6cm ancho) */
+    height: 4cm;      /* ajusta según tu etiqueta */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    text-align: center;
+    border: 1px dashed #bbb;
+    margin: 10px 0;
+    padding: 4px;
+}
+
+/* 🎯 Centrado del código de barras */
+.barcode-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 2.2cm; /* altura fija para centrar el código */
+    width: 100%;
+}
+
+.barcode-wrapper img {
+    width: 85%;
+    height: auto;
+}
+
+/* 📋 Tipografía */
+.marca {
+    font-size: 11px;
+    font-weight: bold;
+    margin: 0;
+}
+
+.codigo {
+    font-size: 10px;
+    margin: 0;
+}
+
+.detalles {
+    font-size: 9px;
+    color: #555;
+    margin: 0;
+}
+
+.precio {
+    font-size: 11px;
+    font-weight: bold;
+    margin-top: 2px;
+}
+
+/* 🖨️ Modo impresión */
+@media print {
+    @page {
+        size: 6cm 4cm; /* ajusta según tu etiqueta */
+        margin: 0;
+    }
+    body {
+        margin: 0;
+        padding: 0;
+    }
+    .acciones {
+        display: none;
+    }
+    .etiqueta {
+        border: none;
+        margin: 0;
+    }
+}
+</style>
+
+<script>
+window.onload = function() {
+    window.print();
+};
+</script>
+{% endblock %}
